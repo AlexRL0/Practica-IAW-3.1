@@ -2,8 +2,9 @@
 - name: Deploy Moodle
   hosts: frontend
   become: true
+
   vars_files:
-    - .env
+    - ../vars/variables.yml
 
   tasks:
     - name: Limpiar descargas previas de Moodle
