@@ -1,6 +1,6 @@
 ---
 - name: Deploy Moodle
-  hosts: localhost
+  hosts: frontend
   become: true
   vars_files:
     - .env
