@@ -31,50 +31,35 @@
         remote_src: yes
 
     - name: Mover Moodle al directorio deseado
-      command: mv /tmp/moodle {{ moodle_directory }}
+      command: mv /tmp/moodle {{ moodle.directory }}
 
     - name: Configurar permisos para apache
       file:
-        path: "{{ moodle_directory }}"
+        path: "{{ moodle.directory }}"
         state: directory
         owner: www-data
         group: www-data
         mode: '0755'
         recurse: yes
 
-    - name: Crear base de datos para Moodle
-      mysql_db:
-        name: "{{ moodle_db_name }}"
-        state: present
-        encoding: utf8mb4
-        collation: utf8mb4_unicode_ci
-
-    - name: Crear usuario de base de datos para Moodle
-      mysql_user:
-        name: "{{ moodle_db_user }}"
-        password: "{{ moodle_db_password }}"
-        priv: "{{ moodle_db_name }}.*:ALL"
-        host: "{{ ip_cliente_mysql }}"
-        state: present
-
     - name: Configurar Moodle
       template:
-        src: "{{ moodle_directory }}/config-dist.php"
-        dest: "{{ moodle_directory }}/config.php"
+        src: "{{ moodle.directory }}/config-dist.php"
+        dest: "{{ moodle.directory }}/config.php"
 
     - name: Modificar config.php para Moodle
       lineinfile:
-        path: "{{ moodle_directory }}/config.php"
+        path: "{{ moodle.directory }}/config.php"
         regexp: "{{ item.regexp }}"
         line: "{{ item.line }}"
       with_items:
-        - { regexp: "'pgsql'", line: "'{{ moodle_type }}'" }
-        - { regexp: "'localhost'", line: "'{{ moodle_db_host }}'" }
-        - { regexp: "'moodle'", line: "'{{ moodle_db_name }}'" }
-        - { regexp: "'username'", line: "'{{ moodle_db_user }}'" }
-        - { regexp: "'password'", line: "'{{ moodle_db_password }}'" }
-        - { regexp: "\\$CFG->wwwroot.*", line: "\\$CFG->wwwroot = 'https://{{ moodle_domain }}';" }
-        - { regexp: "\\$CFG->dataroot.*", line: "\\$CFG->dataroot = '{{ moodle_data_directory }}';" }
+        - { regexp: "'pgsql'", line: "'{{ moodle.type }}'" }
+        - { regexp: "'localhost'", line: "'{{ moodle.db_host }}'" }
+        - { regexp: "'moodle'", line: "'{{ moodle.db_name }}'" }
+        - { regexp: "'username'", line: "'{{ moodle.db_user }}'" }
+        - { regexp: "'password'", line: "'{{ moodle.db_password }}'" }
+        - { regexp: "\\$CFG->wwwroot.*", line: "\\$CFG->wwwroot = 'https://{{ moodle.domain }}';" }
+        - { regexp: "\\$CFG->dataroot.*", line: "\\$CFG->dataroot = '{{ moodle.data_directory }}';" }
 
     - name: Configurar max_input_vars en php.ini
       lineinfile:
@@ -87,7 +72,7 @@
 
     - name: Crear directorio de datos de Moodle
       file:
-        path: "{{ moodle_data_directory }}"
+        path: "{{ moodle.data_directory }}"
         state: directory
         owner: www-data
         group: www-data
