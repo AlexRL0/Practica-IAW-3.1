@@ -7,23 +7,21 @@
     - ../vars/variables.yml
 
   tasks:
+    - name: Mostrar comandos
+      command: set -ex
+
+    - name: Importar variables de entorno
+      shell: source .env
+
     - name: Limpiar descargas previas de Moodle
       file:
         path: /tmp/moodle*
         state: absent
-      ignore_errors: true
 
     - name: Limpiar directorio /var/www/html
       file:
         path: /var/www/html/*
         state: absent
-      ignore_errors: true
-
-    - name: Limpiar directorio /var/www/html/moodle
-      file:
-        path: /var/www/html/moodle/*
-        state: absent
-      ignore_errors: true
 
     - name: Descargar el código fuente de Moodle
       get_url:
@@ -38,6 +36,7 @@
 
     - name: Mover Moodle al directorio deseado
       command: mv /tmp/moodle {{ moodle.directory }}
+
 
     - name: Configurar permisos para apache
       file:
@@ -86,7 +85,7 @@
         mode: '0755'
         recurse: yes
 
-    - sname: Reiniciar apache
+    - name: Reiniciar apache
       service:
         name: apache2
         state: restarted
