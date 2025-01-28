@@ -22,20 +22,35 @@
         name: python3-pymysql
         state: present
 
-    - name: Crear base de datos para Moodle
+    - name: Crear la base de datos para moodle
       mysql_db:
-        name: "{{ db.name }}"
-        state: present
+        name: "{{ moodle.db_name }}"
         encoding: utf8mb4
         collation: utf8mb4_unicode_ci
-
-    - name: Crear usuario de base de datos para Moodle
-      mysql_user:
-        name: "{{ db.user }}"
-        password: "{{ db.password }}"
-        priv: "{{ db.name }}.*:ALL"
-        host: "{{ moodle.ip_cliente_mysql }}"
         state: present
+        login_user: root
+
+    - name: Borra el usuario si existe
+      mysql_user:
+        name: "{{ moodle.db_user }}"
+        host: "{{ moodle.ip_cliente_mysql }}"
+        state: absent
+        login_user: root
+
+    - name: Crear el usuario para la base de datos de moodle
+      mysql_user:
+        name: "{{ moodle.db_user }}"
+        host: "{{ moodle.ip_cliente_mysql }}"
+        password: "{{ moodle.db_password }}"
+        priv: "{{ moodle.db_name }}.*:ALL"
+        state: present
+        login_user: root
+
+    - name: Reiniciamos privilegios del usuario
+      mysql_db:
+        name: "{{ moodle.db_name }}"
+        state: present
+        login_user: root
 
     - name: Reiniciamos el servicio de base de datos
       service:
