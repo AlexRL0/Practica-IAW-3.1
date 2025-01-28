@@ -62,6 +62,22 @@
         dest: /etc/apache2/sites-available/
         mode: 0755
 
+    - name: Crear directorio /var/www/html/moodle
+      file:
+        path: /var/www/html/moodle
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Crear directorio /var/www/moodledata
+      file:
+        path: /var/www/moodledata
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
     - name: Habilitar el módulo rewrite de Apache
       apache2_module:
         name: rewrite
