@@ -19,6 +19,12 @@
         state: absent
       ignore_errors: true
 
+    - name: Limpiar directorio /var/www/html/moodle
+      file:
+        path: /var/www/html/moodle/*
+        state: absent
+      ignore_errors: true
+
     - name: Descargar el código fuente de Moodle
       get_url:
         url: https://download.moodle.org/download.php/direct/stable405/moodle-latest-405.tgz
@@ -42,8 +48,8 @@
         mode: '0755'
         recurse: yes
 
-    - name: Configurar Moodle
-      template:
+    - name: Copiar archivo config-dist.php
+      copy:
         src: "{{ moodle.directory }}/config-dist.php"
         dest: "{{ moodle.directory }}/config.php"
 
@@ -78,6 +84,9 @@
         group: www-data
         mode: '0755'
         recurse: yes
+
+    - name: Incluir la creación de la base de datos
+      include_tasks: install_lamp_backend.yml
 
     - name: Reiniciar apache
       service:
