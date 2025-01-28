@@ -28,14 +28,14 @@
         encoding: utf8mb4
         collation: utf8mb4_unicode_ci
         state: present
-        login_user: root
+        login_unix_socket: /var/run/mysqld/mysqld.sock
 
     - name: Borra el usuario si existe
       mysql_user:
         name: "{{ moodle.db_user }}"
         host: "{{ moodle.ip_cliente_mysql }}"
         state: absent
-        login_user: root
+        login_unix_socket: /var/run/mysqld/mysqld.sock
 
     - name: Crear el usuario para la base de datos de moodle
       mysql_user:
@@ -44,13 +44,13 @@
         password: "{{ moodle.db_password }}"
         priv: "{{ moodle.db_name }}.*:ALL"
         state: present
-        login_user: root
+        login_unix_socket: /var/run/mysqld/mysqld.sock
 
     - name: Reiniciamos privilegios del usuario
       mysql_db:
         name: "{{ moodle.db_name }}"
         state: present
-        login_user: root
+        login_unix_socket: /var/run/mysqld/mysqld.sock
 
     - name: Reiniciamos el servicio de base de datos
       service:
