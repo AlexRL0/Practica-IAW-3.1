@@ -1,7 +1,6 @@
----
 - name: Deploy Moodle
   hosts: frontend
-  become: true
+  become: yes
 
   vars_files:
     - ../vars/variables.yml
@@ -19,9 +18,9 @@
         state: absent
       ignore_errors: true
 
-    - name: Limpiar directorio /var/www/html/moodle
+    - name: Limpiar directorio /var/www/moodledata
       file:
-        path: /var/www/html/moodle/*
+        path: /var/www/moodledata/*
         state: absent
       ignore_errors: true
 
@@ -37,11 +36,21 @@
         remote_src: yes
 
     - name: Mover Moodle al directorio deseado
-      command: mv /tmp/moodle {{ moodle.directory }}
+      command:
+        cmd: mv /tmp/moodle {{ moodle.directory }}
 
-    - name: Configurar permisos para apache
+    - name: Configurar permisos para el directorio moodle
       file:
         path: "{{ moodle.directory }}"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+        recurse: yes
+
+    - name: Configurar permisos para el directorio moodledata
+      file:
+        path: "{{ moodle.data_directory }}"
         state: directory
         owner: www-data
         group: www-data
@@ -56,10 +65,10 @@
 
     - name: Ejecutar instalación de Moodle
       command: >
-        sudo -u www-data php /var/www/html/moodle/admin/cli/install.php
+        sudo -u www-data php {{ moodle.directory }}/admin/cli/install.php
         --lang=es
         --wwwroot=https://{{ moodle.domain }}
-        --dataroot=/var/www/moodledata
+        --dataroot={{ moodle.data_directory }}
         --dbtype=mysqli
         --dbhost={{ moodle.db_host }}
         --dbname={{ moodle.db_name }}
@@ -73,24 +82,6 @@
         --adminemail="admin@gmail.com"
         --non-interactive
         --agree-license
-
-    - name: Configurar max_input_vars en php.ini
-      lineinfile:
-        path: /etc/php/8.3/{{ item }}/php.ini
-        regexp: "^max_input_vars.*"
-        line: "max_input_vars = 5000"
-      with_items:
-        - cli
-        - apache2
-
-    - name: Crear directorio de datos de Moodle
-      file:
-        path: "{{ moodle.data_directory }}"
-        state: directory
-        owner: www-data
-        group: www-data
-        mode: '0755'
-        recurse: yes
 
     - name: Reiniciar apache
       service:
