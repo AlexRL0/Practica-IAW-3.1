@@ -12,7 +12,7 @@ moodle:
     db_password: ContraseñaSuperSegura1308
     type: mysqli
     db_host: 172.31.36.190
-    ip_cliente_mysql: 172.31.43.85
+    ip_cliente_mysql: 172.31.45.95
     domain: moodle-ansiblearl.zapto.org
     data_directory: /var/www/moodledata
 

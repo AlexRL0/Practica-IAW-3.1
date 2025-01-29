@@ -30,6 +30,8 @@
           - php-dom
           - php-zip
           - php-cli
+          - php-xml
+          - php-soap
         state: present
 
     - name: Modificamos el valor max_input_vars de PHP
