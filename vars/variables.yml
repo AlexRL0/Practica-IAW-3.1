@@ -10,7 +10,7 @@ moodle:
     db_name: moodle_db
     db_user: usuario_moodle
     db_password: ContraseñaSuperSegura1308
-    type: pgsql
+    type: mysqli
     db_host: 172.31.36.190
     ip_cliente_mysql: 172.31.43.85
     domain: moodle-ansiblearl.zapto.org
@@ -18,5 +18,5 @@ moodle:
 
     
 certbot:
-    email: otrousuario@email.es
-    domain: moodle-ansiblearl.zapto.org
+    le_email: otrousuario@email.es
+    le_domain: moodle-ansiblearl.zapto.org

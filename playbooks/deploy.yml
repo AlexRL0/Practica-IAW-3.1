@@ -54,19 +54,25 @@
         dest: "{{ moodle.directory }}/config.php"
         remote_src: yes
 
-    - name: Modificar config.php para Moodle
-      lineinfile:
-        path: "{{ moodle.directory }}/config.php"
-        regexp: "{{ item.regexp }}"
-        line: "{{ item.line }}"
-      with_items:
-        - { regexp: "'pgsql'", line: "'{{ moodle.type }}'" }
-        - { regexp: "'localhost'", line: "'{{ moodle.db_host }}'" }
-        - { regexp: "'moodle'", line: "'{{ moodle.db_name }}'" }
-        - { regexp: "'username'", line: "'{{ moodle.db_user }}'" }
-        - { regexp: "'password'", line: "'{{ moodle.db_password }}'" }
-        - { regexp: "\\$CFG->wwwroot.*", line: "\\$CFG->wwwroot = 'https://{{ moodle.domain }}';" }
-        - { regexp: "\\$CFG->dataroot.*", line: "\\$CFG->dataroot = '{{ moodle.data_directory }}';" }
+    - name: Ejecutar instalación de Moodle
+      command: >
+        sudo -u www-data php /var/www/html/moodle/admin/cli/install.php
+        --lang=es
+        --wwwroot=https://{{ moodle.domain }}
+        --dataroot=/var/www/moodledata
+        --dbtype=mysqli
+        --dbhost={{ moodle.db_host }}
+        --dbname={{ moodle.db_name }}
+        --dbuser={{ moodle.db_user }}
+        --dbpass={{ moodle.db_password }}
+        --fullname="Moodle"
+        --shortname="ARL"
+        --summary="celia"
+        --adminuser=admin
+        --adminpass="Admin01%"
+        --adminemail="admin@gmail.com"
+        --non-interactive
+        --agree-license
 
     - name: Configurar max_input_vars en php.ini
       lineinfile:
