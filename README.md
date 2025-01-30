@@ -193,30 +193,6 @@ sudo chmod 400 vockey.pem
     - ../vars/variables.yml
 ```
 
-> [!IMPORTANT]  
-> El contenido del fichero `variables.yml` tiene que tener el siguente contenido:
-> ```yaml
-> db:
->   name: 
->   user:
->   password: 
->
-> moodle:
->   directory: 
->   db_name:
->   db_user: 
->   db_password: 
->   type:
->   db_host: 
->   ip_cliente_mysql:
->   domain: 
->   data_directory:
->
->    
-> certbot:
->   le_email:
->   le_domain: 
-> ```
 
 ### Paso 2. Actualizamos los repositorios
 
