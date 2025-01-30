@@ -55,6 +55,12 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=accept-new'
 > `ansible_ssh_private_key_file=/home/ubuntu/Practica-IAW-3.1/vockey.pem:` Ruta al archivo de clave privada SSH para autenticarse en los hosts.  
 > `ansible_ssh_common_args='-o StrictHostKeyChecking=accept-new':` Argumentos adicionales de SSH, en este caso, para aceptar automáticamente nuevas claves de host sin preguntar.
 
+También es importante darle los permisos necesarios a la clave `vockey.pem` para que pueda leer el archivo. Eso se puede hacer mediante el comando:
+
+```bash
+sudo chmod 400 vockey.pem
+```
+
 ## 2. Creación del archivo `deploy_moodle` para la implementación
 
 ### Paso 1. Importamos el archivo de variables y mostramos los comandos que se van ejecutando 
