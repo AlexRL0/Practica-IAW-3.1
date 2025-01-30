@@ -34,7 +34,7 @@ La infraestructura necesaria está compuesta de tres máquinas virtuales, un nod
 
 Para que el nodo de control pueda ver las otras máquinas sin problemas, hay que crear una carpeta llamada `inventory` y dentro de ella un archivo llamado `inventory` con el siguiente contenido:
 
-```yml
+```yaml
 [frontend]
 18.215.192.38
 
@@ -61,49 +61,115 @@ También es importante darle los permisos necesarios a la clave `vockey.pem` par
 sudo chmod 400 vockey.pem
 ```
 
-## 2. Creación del archivo `deploy_moodle` para la implementación
+## 2. Creación del archivo `install_lamp_frontend` para la instalación de apache en el frontend
 
-### Paso 1. Importamos el archivo de variables y mostramos los comandos que se van ejecutando 
+### Paso 1. Actualizamos los repositorios
 
-```bash
-source .env
+```yaml
+- name: Actualizar los repositorios
+  apt:
+    update_cache: yes
 ```
 
-```bash
-set -ex
+### Paso 2. Instalamos el servidor web Apache
+
+```yaml
+- name: Instalar el servidor web Apache
+  apt:
+    name: apache2
+    state: present
 ```
 
-### Paso 2. Eliminamos descargas previas de moodle
+### Paso 3. Instalamos PHP y los módulos necesarios
 
-```bash
-rm -rf /tmp/moodle*
+```yaml
+- name: Instalar PHP y los módulos necesarios
+  apt: 
+    name:
+      - php
+      - php-mysql
+      - libapache2-mod-php
+      - php-bcmath
+      - php-curl
+      - php-gd
+      - php-imagick
+      - php-intl
+      - php-memcached
+      - php-mbstring
+      - php-dom
+      - php-zip
+      - php-cli
+      - php-xml
+      - php-soap
+    state: present
 ```
 
-> [!TIP]  
-> Hacemos esto para evitar que haya duplicados dentro de ese directorio a la hora de descargarnos moodle.
+### Paso 4. Modificamos la configuración de PHP
 
-### Paso 3. Eliminamos descargas previas de /var/www/html/*
+```yaml
+- name: Modificamos el valor max_input_vars de PHP
+  replace: 
+    path: /etc/php/8.3/apache2/php.ini
+    regexp: ;max_input_vars = 1000
+    replace: max_input_vars = 5000
 
-```bash
-rm -rf /var/www/html/*
+- name: Modificamos el valor de memory_limit de PHP
+  replace: 
+    path: /etc/php/8.3/apache2/php.ini
+    regexp: memory_limit = 128M
+    replace: memory_limit = 256M
+
+- name: Modificamos el valor de post_max_size de PHP
+  replace: 
+    path: /etc/php/8.3/apache2/php.ini
+    regexp: post_max_size = 8M
+    replace: post_max_size = 128M
+
+- name: Modificamos el valor de upload_max_filesize de PHP
+  replace:
+    path: /etc/php/8.3/apache2/php.ini
+    regexp: upload_max_filesize = 2M
+    replace: upload_max_filesize = 128M
 ```
 
-### Paso 4. Descargamos el código fuente de Moodle
+### Paso 5. Configuramos Apache y creamos los directorios necesarios
 
-```bash
-wget https://download.moodle.org/download.php/direct/stable405/moodle-latest-405.tgz -P /tmp
+```yaml
+- name: Copiar el archivo de configuración de Apache
+  copy:
+    src: ../templates/000-default.conf
+    dest: /etc/apache2/sites-available/
+    mode: 0755
+
+- name: Crear directorio /var/www/html/moodle
+  file:
+    path: /var/www/html/moodle
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
+
+- name: Crear directorio /var/www/moodledata
+  file:
+    path: /var/www/moodledata
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: '0755'
 ```
 
-### Paso 5. Extraemos Moodle
+### Paso 6. Habilitamos el módulo rewrite de Apache y reiniciamos Apache
 
-```bash
-tar -zxvf /tmp/moodle-latest-405.tgz -C /tmp
-```
+```yaml
+- name: Habilitar el módulo rewrite de Apache
+  apache2_module:
+    name: rewrite
+    state: present
 
-### Paso 6. Movemos Moodle al directorio deseado
-
-```bash
-mv /tmp/moodle $MOODLE_DIRECTORY
+- name: Reiniciar el servidor web Apache
+  service:
+    name: apache2
+    state: restarted
 ```
 
 ### Paso 7. Configuramos permisos para apache
