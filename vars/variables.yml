@@ -1,4 +1,4 @@
-frontend_private_ip: 172.31.43.85
+frontend_private_ip: 172.31.45.95
 
 db:
     name: moodle_db
@@ -9,10 +9,10 @@ moodle:
     directory: /var/www/html/moodle
     db_name: moodle_db
     db_user: usuario_moodle
-    db_password: ContraseñaSuperSegura1308
+    db_password: Contraasir
     type: mysqli
     db_host: 172.31.36.190
-    ip_cliente_mysql: 172.31.45.95
+    ip_cliente_mysql: 172.31.%
     domain: moodle-ansiblearl.zapto.org
     data_directory: /var/www/moodledata
 
