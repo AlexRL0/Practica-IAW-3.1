@@ -52,7 +52,7 @@
         state: present
         login_unix_socket: /var/run/mysqld/mysqld.sock
 
-    - name: Reiniciamos el servicio de base de datos
+    - name: Reiniciamos MySQL
       service:
         name: mysql
         state: restarted

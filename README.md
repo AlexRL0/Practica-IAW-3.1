@@ -93,90 +93,90 @@ sudo chmod 400 vockey.pem
     - name: Instalar PHP y los módulos necesarios
       apt: 
         name:
-         - php
-         - php-mysql
-         - libapache2-mod-php
-         - php-bcmath
-         - php-curl
-         - php-gd
-         - php-imagick
-         - php-intl
-         - php-memcached
-         - php-mbstring
-         - php-dom
-         - php-zip
-         - php-cli
-         - php-xml
-         - php-soap
-       state: present
+          - php
+          - php-mysql
+          - libapache2-mod-php
+          - php-bcmath
+          - php-curl
+          - php-gd
+          - php-imagick
+          - php-intl
+          - php-memcached
+          - php-mbstring
+          - php-dom
+          - php-zip
+          - php-cli
+          - php-xml
+          - php-soap
+        state: present
 ```
 
 ### Paso 4. Modificamos la configuración de PHP
 
 ```yaml
-- name: Modificamos el valor max_input_vars de PHP
-  replace: 
-    path: /etc/php/8.3/apache2/php.ini
-    regexp: ;max_input_vars = 1000
-    replace: max_input_vars = 5000
+    - name: Modificamos el valor max_input_vars de PHP
+      replace: 
+        path: /etc/php/8.3/apache2/php.ini
+        regexp: ;max_input_vars = 1000
+        replace: max_input_vars = 5000
 
-- name: Modificamos el valor de memory_limit de PHP
-  replace: 
-    path: /etc/php/8.3/apache2/php.ini
-    regexp: memory_limit = 128M
-    replace: memory_limit = 256M
+    - name: Modificamos el valor de memory_limit de PHP
+      replace: 
+        path: /etc/php/8.3/apache2/php.ini
+        regexp: memory_limit = 128M
+        replace: memory_limit = 256M
 
-- name: Modificamos el valor de post_max_size de PHP
-  replace: 
-    path: /etc/php/8.3/apache2/php.ini
-    regexp: post_max_size = 8M
-    replace: post_max_size = 128M
+    - name: Modificamos el valor de post_max_size de PHP
+      replace: 
+        path: /etc/php/8.3/apache2/php.ini
+        regexp: post_max_size = 8M
+        replace: post_max_size = 128M
 
-- name: Modificamos el valor de upload_max_filesize de PHP
-  replace:
-    path: /etc/php/8.3/apache2/php.ini
-    regexp: upload_max_filesize = 2M
-    replace: upload_max_filesize = 128M
+    - name: Modificamos el valor de upload_max_filesize de PHP
+      replace:
+        path: /etc/php/8.3/apache2/php.ini
+        regexp: upload_max_filesize = 2M
+        replace: upload_max_filesize = 128M
 ```
 
 ### Paso 5. Configuramos Apache y creamos los directorios necesarios
 
 ```yaml
-- name: Copiar el archivo de configuración de Apache
-  copy:
-    src: ../templates/000-default.conf
-    dest: /etc/apache2/sites-available/
-    mode: 0755
+    - name: Copiar el archivo de configuración de Apache
+      copy:
+        src: ../templates/000-default.conf
+        dest: /etc/apache2/sites-available/
+        mode: 0755
 
-- name: Crear directorio /var/www/html/moodle
-  file:
-    path: /var/www/html/moodle
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: '0755'
+    - name: Crear directorio /var/www/html/moodle
+      file:
+        path: /var/www/html/moodle
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
 
-- name: Crear directorio /var/www/moodledata
-  file:
-    path: /var/www/moodledata
-    state: directory
-    owner: www-data
-    group: www-data
-    mode: '0755'
+    - name: Crear directorio /var/www/moodledata
+      file:
+        path: /var/www/moodledata
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
 ```
 
 ### Paso 6. Habilitamos el módulo rewrite de Apache y reiniciamos Apache
 
 ```yaml
-- name: Habilitar el módulo rewrite de Apache
-  apache2_module:
-    name: rewrite
-    state: present
+    - name: Habilitar el módulo rewrite de Apache
+      apache2_module:
+        name: rewrite
+        state: present
 
-- name: Reiniciar el servidor web Apache
-  service:
-    name: apache2
-    state: restarted
+    - name: Reiniciar el servidor web Apache
+      service:
+        name: apache2
+        state: restarted
 ```
 
 ## 2. Creación del archivo `install_lamp_backend` para la instalación de mysql y creacion de la base de datos y el usuario en el backend
@@ -193,11 +193,10 @@ sudo chmod 400 vockey.pem
     - ../vars/variables.yml
 ```
 
-
 ### Paso 2. Actualizamos los repositorios
 
 ```yaml
-tasks:
+  tasks:
 
     - name: Actualizar los repositorios
       apt:
@@ -207,7 +206,7 @@ tasks:
 ### Paso 3. Instalamos el sistema gestor de bases de datos MySQL
 
 ```yaml
-- name: Instalar el sistema gestor de bases de datos MySQL
+    - name: Instalar el sistema gestor de bases de datos MySQL
       apt:
         name: mysql-server
         state: present
@@ -216,7 +215,7 @@ tasks:
 ### Paso 4. Instalamos el modulo de pymysql
 
 ```yaml
-- name: Instalamos el módulo de pymysql
+    - name: Instalamos el módulo de pymysql
       apt:
         name: python3-pymysql
         state: present
@@ -225,19 +224,22 @@ tasks:
 ### Paso 5. Creamos la base de datos para moodle
 
 ```yaml
-- name: Crear la base de datos para moodle
-  mysql_db:
-    name: "{{ moodle.db_name }}"
-    encoding: utf8mb4
-    collation: utf8mb4_unicode_ci
-    state: present
-    login_unix_socket: /var/run/mysqld/mysqld.sock
+    - name: Crear la base de datos para moodle
+      mysql_db:
+        name: "{{ moodle.db_name }}"
+        encoding: utf8mb4
+        collation: utf8mb4_unicode_ci
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqld.sock
 ```
+
+> [!IMPORTANT]  
+>Las variables que irán apareciendo durante los pasos están todas definidas en el archivo variables.yml y en variables_example.yml se pueden ver las variables que hay que tener definidas.
 
 ### Paso 6. Borramos el usuario para la base de datos de moodle si existe
 
 ```yaml
-- name: Borra el usuario si existe
+    - name: Borra el usuario si existe
       mysql_user:
         name: "{{ moodle.db_user }}"
         host: "{{ moodle.ip_cliente_mysql }}"
@@ -248,7 +250,7 @@ tasks:
 ### Paso 7. Creamos el usuario para la base de datos de moodle
 
 ```yaml
-   - name: Crear el usuario para la base de datos de moodle
+    - name: Crear el usuario para la base de datos de moodle
       mysql_user:
         name: "{{ moodle.db_user }}"
         host: "{{ moodle.ip_cliente_mysql }}"
@@ -257,3 +259,20 @@ tasks:
         state: present
         login_unix_socket: /var/run/mysqld/mysqld.sock
 ```
+
+### Paso 8. Reiniciamos los privilegios del usuario y el servicio MySQL
+
+```yaml
+    - name: Reiniciamos privilegios del usuario
+      mysql_db:
+        name: "{{ moodle.db_name }}"
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+
+    - name: Reiniciamos el servicio de base de datos
+      service:
+        name: mysql
+        state: restarted
+```
+
+
