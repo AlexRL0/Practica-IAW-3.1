@@ -1,5 +1,3 @@
-frontend_private_ip: 172.31.45.95
-
 db:
     name: moodle_db
     user: usuario_moodle

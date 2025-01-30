@@ -61,47 +61,54 @@ También es importante darle los permisos necesarios a la clave `vockey.pem` par
 sudo chmod 400 vockey.pem
 ```
 
-## 2. Creación del archivo `install_lamp_frontend` para la instalación de apache en el frontend
+## 2. Creación del archivo `install_lamp_frontend` para la instalación de apache en el frontend.
 
 ### Paso 1. Actualizamos los repositorios
 
 ```yaml
-- name: Actualizar los repositorios
-  apt:
-    update_cache: yes
+---
+- name: Playbook para instalar la pila LAMP en el FrontEnd
+  hosts: frontend
+  become: yes
+
+  tasks:
+
+    - name: Actualizar los repositorios
+      apt:
+        update_cache: yes
 ```
 
 ### Paso 2. Instalamos el servidor web Apache
 
 ```yaml
-- name: Instalar el servidor web Apache
-  apt:
-    name: apache2
-    state: present
+    - name: Instalar el servidor web Apache
+      apt:
+        name: apache2
+        state: present
 ```
 
 ### Paso 3. Instalamos PHP y los módulos necesarios
 
 ```yaml
-- name: Instalar PHP y los módulos necesarios
-  apt: 
-    name:
-      - php
-      - php-mysql
-      - libapache2-mod-php
-      - php-bcmath
-      - php-curl
-      - php-gd
-      - php-imagick
-      - php-intl
-      - php-memcached
-      - php-mbstring
-      - php-dom
-      - php-zip
-      - php-cli
-      - php-xml
-      - php-soap
-    state: present
+    - name: Instalar PHP y los módulos necesarios
+      apt: 
+        name:
+         - php
+         - php-mysql
+         - libapache2-mod-php
+         - php-bcmath
+         - php-curl
+         - php-gd
+         - php-imagick
+         - php-intl
+         - php-memcached
+         - php-mbstring
+         - php-dom
+         - php-zip
+         - php-cli
+         - php-xml
+         - php-soap
+       state: present
 ```
 
 ### Paso 4. Modificamos la configuración de PHP
@@ -172,70 +179,105 @@ sudo chmod 400 vockey.pem
     state: restarted
 ```
 
-### Paso 7. Configuramos permisos para apache
+## 2. Creación del archivo `install_lamp_backend` para la instalación de mysql y creacion de la base de datos y el usuario en el backend
 
-```bash
-chown -R www-data:www-data $MOODLE_DIRECTORY
-chmod -R 755 $MOODLE_DIRECTORY
-```
+### Paso 1. Incluimos el archivo de variables
 
-### Paso 8. Creamos la base de datos y el usuario para Moodle
+```yaml
+---
+- name: Playbook para instalar la pila LAMP en el Backend
+  hosts: backend
+  become: yes
 
-```bash
-mysql -u root <<< "DROP DATABASE IF EXISTS $MOODLE_DB_NAME"
-mysql -u root <<< "CREATE DATABASE $MOODLE_DB_NAME DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-mysql -u root <<< "DROP USER IF EXISTS '$MOODLE_DB_USER'@'$IP_CLIENTE_MYSQL'"
-mysql -u root <<< "CREATE USER '$MOODLE_DB_USER'@'$IP_CLIENTE_MYSQL' IDENTIFIED BY '$MOODLE_DB_PASSWORD'"
-mysql -u root <<< "GRANT ALL PRIVILEGES ON $MOODLE_DB_NAME.* TO '$MOODLE_DB_USER'@'$IP_CLIENTE_MYSQL'"
-mysql -u root <<< "FLUSH PRIVILEGES"
+  vars_files:
+    - ../vars/variables.yml
 ```
 
 > [!IMPORTANT]  
-> Las variables las cambiamos por las que tenemos en el archivo `.env` configuradas para que se cree todo correctamente.
+> El contenido del fichero `variables.yml` tiene que tener el siguente contenido:
+> ```yaml
+> db:
+>   name: 
+>   user:
+>   password: 
+>
+> moodle:
+>   directory: 
+>   db_name:
+>   db_user: 
+>   db_password: 
+>   type:
+>   db_host: 
+>   ip_cliente_mysql:
+>   domain: 
+>   data_directory:
+>
+>    
+> certbot:
+>   le_email:
+>   le_domain: 
+> ```
 
-### Paso 9. Creamos el archivo de configuración de moodle y lo configuramos
+### Paso 2. Actualizamos los repositorios
 
-```bash
-cp $MOODLE_DIRECTORY/config-dist.php $MOODLE_DIRECTORY/config.php
-sed -i "s/'pgsql'/'${MOODLE_TYPE//\//\\/}'/g" $MOODLE_DIRECTORY/config.php 
-sed -i "s/'localhost'/'${MOODLE_DB_HOST//\//\\/}'/g" $MOODLE_DIRECTORY/config.php 
-sed -i "s/'moodle'/'${MOODLE_DB_NAME//\//\\/}'/g" $MOODLE_DIRECTORY/config.php 
-sed -i "s/'username'/'${MOODLE_DB_USER//\//\\/}'/g" $MOODLE_DIRECTORY/config.php 
-sed -i "s/'password'/'${MOODLE_DB_PASSWORD//\//\\/}'/g" $MOODLE_DIRECTORY/config.php 
-sed -i "s|\$CFG->wwwroot.*|\$CFG->wwwroot = 'https://${MOODLE_DOMAIN//\//\\/}';|" $MOODLE_DIRECTORY/config.php
-sed -i "s|\$CFG->dataroot.*|\$CFG->dataroot = '${MOODLE_DATA_DIRECTORY//\//\\/}';|" $MOODLE_DIRECTORY/config.php
-sed -i "s/^max_input_vars.*/max_input_vars = 5000/" /etc/php/8.3/cli/php.ini
-sed -i "s/^max_input_vars.*/max_input_vars = 5000/" /etc/php/8.3/apache2/php.ini
+```yaml
+tasks:
+
+    - name: Actualizar los repositorios
+      apt:
+        update_cache: yes
 ```
 
-> [!IMPORTANT]  
-> **Las variables** las cambiamos por las que tenemos en el archivo `.env` configuradas para que se cree todo correctamente. 
->> **Descripción de los comandos:** 
-> - Cambia el tipo de base de datos usado por Moodle. 
-> - Actualiza la dirección del servidor de la base de datos. 
-> - Configura el nombre de la base de datos de Moodle. 
-> - Establece el nombre de usuario para la base de datos. 
-> - Define la contraseña para la base de datos. 
-> - Actualiza la URL principal del sitio Moodle. 
-> - Configura el directorio donde Moodle almacena sus datos. 
-> - Ajusta el parámetro `max_input_vars` para PHP CLI. 
-> - Ajusta el parámetro `max_input_vars` para PHP Apache.
+### Paso 3. Instalamos el sistema gestor de bases de datos MySQL
 
-
-### Paso 10. Creamos el directorio de datos de Moodle
-
-```bash
-mkdir -p $MOODLE_DATA_DIRECTORY
-chown -R www-data:www-data $MOODLE_DATA_DIRECTORY
-chmod -R 755 $MOODLE_DATA_DIRECTORY
+```yaml
+- name: Instalar el sistema gestor de bases de datos MySQL
+      apt:
+        name: mysql-server
+        state: present
 ```
 
-### Paso 11. Reiniciamos apache
+### Paso 4. Instalamos el modulo de pymysql
 
-```bash
-systemctl restart apache2
+```yaml
+- name: Instalamos el módulo de pymysql
+      apt:
+        name: python3-pymysql
+        state: present
 ```
 
-### Paso 12. Comprobación de que Moodle funciona
+### Paso 5. Creamos la base de datos para moodle
 
-![](imagenes/Moodle.png)
+```yaml
+- name: Crear la base de datos para moodle
+  mysql_db:
+    name: "{{ moodle.db_name }}"
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+    state: present
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+```
+
+### Paso 6. Borramos el usuario para la base de datos de moodle si existe
+
+```yaml
+- name: Borra el usuario si existe
+      mysql_user:
+        name: "{{ moodle.db_user }}"
+        host: "{{ moodle.ip_cliente_mysql }}"
+        state: absent
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+```
+
+### Paso 7. Creamos el usuario para la base de datos de moodle
+
+```yaml
+   - name: Crear el usuario para la base de datos de moodle
+      mysql_user:
+        name: "{{ moodle.db_user }}"
+        host: "{{ moodle.ip_cliente_mysql }}"
+        password: "{{ moodle.db_password }}"
+        priv: "{{ moodle.db_name }}.*:ALL"
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqld.sock
+```
