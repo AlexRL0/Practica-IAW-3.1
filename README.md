@@ -48,9 +48,9 @@ ansible_ssh_common_args='-o StrictHostKeyChecking=accept-new'
 ```
 
 > [!IMPORTANT]  
-> [frontend]: Especifica el grupo de hosts que son parte del front-end de la infraestructura. Aquí, 18.215.192.38 es la IP del servidor frontend.  
-> [backend]: Especifica el grupo de hosts que son parte del back-end de la infraestructura. Aquí, 50.17.188.169 es la IP del servidor backend.  
-> [all:vars]: Define variables globales que se aplican a todos los hosts.  
+> `[frontend]:` Especifica el grupo de hosts que son parte del front-end de la infraestructura. Aquí, 18.215.192.38 es la IP del servidor frontend.  
+> `[backend]:` Especifica el grupo de hosts que son parte del back-end de la infraestructura. Aquí, 50.17.188.169 es la IP del servidor backend.  
+> `[all:vars]:` Define variables globales que se aplican a todos los hosts.  
 > `ansible_user=ubuntu:` El nombre de usuario que se usará para conectarse a los hosts.  
 > `ansible_ssh_private_key_file=/home/ubuntu/Practica-IAW-3.1/vockey.pem:` Ruta al archivo de clave privada SSH para autenticarse en los hosts.  
 > `ansible_ssh_common_args='-o StrictHostKeyChecking=accept-new':` Argumentos adicionales de SSH, en este caso, para aceptar automáticamente nuevas claves de host sin preguntar.
