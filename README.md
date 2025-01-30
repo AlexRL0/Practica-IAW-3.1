@@ -275,4 +275,87 @@ sudo chmod 400 vockey.pem
         state: restarted
 ```
 
+## 3. Creación del archivo `setup_letsencrypt_https` para la implementación del certificado de la página web
 
+### Paso 1. Incluimos el archivo de variables
+
+```yaml
+---
+- name: Playbook para configurar HTTPS
+  hosts: frontend
+  become: yes
+
+  vars_files:
+    - ../vars/variables.yml
+```
+
+### Paso 2. Desinstalamos instalaciones previas de Certbot
+
+```yaml
+  tasks:
+
+    - name: Desinstalar instalaciones previas de Certbot
+      apt:
+        name: certbot
+        state: absent
+```
+
+### Paso 3. Instalamos Certbot con snap
+
+```yaml
+    - name: Instalar Certbot con snap
+      snap:
+        name: certbot
+        classic: yes
+        state: present
+```
+
+### Paso 4. Solicitamos y configuramos el certificado SSL/TLS a Let's Encrypt con Certbot
+
+```yaml
+    - name: Solicitar y configurar certificado SSL/TLS a Let's Encrypt con certbot
+      command:
+        certbot --apache \
+        -m {{ certbot.le_email }} \
+        --agree-tos \
+        --no-eff-email \
+        --non-interactive \
+        -d {{ certbot.le_domain }}
+```
+
+## 4. Creación del archivo `deploy` para la implementación del certificado de la página web
+
+### Paso 1. Incluimos el archivo de variables
+
+```yaml
+---
+- name: Playbook para configurar HTTPS
+  hosts: frontend
+  become: yes
+
+  vars_files:
+    - ../vars/variables.yml
+```
+
+### Paso 2. Limpiamos descargar previos y directorios para que no haya duplicados
+
+```yaml
+  tasks:
+    - name: Limpiar descargas previas de Moodle
+      file:
+        path: /tmp/moodle*
+        state: absent
+      ignore_errors: true
+
+    - name: Limpiar directorio /var/www/html
+      file:
+        path: /var/www/html/*
+        state: absent
+      ignore_errors: true
+
+    - name: Limpiar directorio /var/www/moodledata
+      file:
+        path: /var/www/moodledata/*
+        state: absent
+      ignore_errors: true
+```
