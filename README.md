@@ -359,3 +359,95 @@ sudo chmod 400 vockey.pem
         state: absent
       ignore_errors: true
 ```
+
+### Paso 3. Descargamos el código fuente de moodle
+
+```yaml
+    - name: Descargar el código fuente de Moodle
+      get_url:
+        url: https://download.moodle.org/download.php/direct/stable405/moodle-latest-405.tgz
+        dest: /tmp/moodle-latest-405.tgz
+```
+
+### Paso 4. Extraemos moodle y lo movemos al directorio deseado
+
+```yaml
+    - name: Extraer Moodle
+      unarchive:
+        src: /tmp/moodle-latest-405.tgz
+        dest: /tmp
+        remote_src: yes
+
+    - name: Mover Moodle al directorio deseado
+      command:
+        cmd: mv /tmp/moodle {{ moodle.directory }}
+```
+
+### Paso 5. Configuramos permisos para los directorios moodle y moodledata
+
+```yaml
+    - name: Configurar permisos para el directorio moodle
+      file:
+        path: "{{ moodle.directory }}"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+        recurse: yes
+
+    - name: Configurar permisos para el directorio moodledata
+      file:
+        path: "{{ moodle.data_directory }}"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0777'
+        recurse: yes
+```
+
+### Paso 6. Hacemos una copia del archivo config-dist.php
+
+```yaml
+    - name: Copiar archivo config-dist.php
+      copy:
+        src: "{{ moodle.directory }}/config-dist.php"
+        dest: "{{ moodle.directory }}/config.php"
+        remote_src: yes
+```
+
+### Paso 7. Ejecutamos la instalación de Moodle
+
+```yaml
+    - name: Ejecutar instalación de Moodle
+      command: >
+        sudo -u www-data php /var/www/html/moodle/admin/cli/install.php
+        --lang=es
+        --wwwroot=https://{{moodle.domain}}
+        --dataroot={{moodle.data_directory}}
+        --dbtype=mysqli
+        --dbhost={{moodle.db_host}}
+        --dbname={{moodle.db_name}}
+        --dbuser={{moodle.db_user}}
+        --dbpass={{moodle.db_password}}
+        --fullname="Moodle"
+        --shortname="ARL"
+        --summary="celia"
+        --adminuser=admin
+        --adminpass="Admin01%"
+        --adminemail="admin@gmail.com"
+        --non-interactive
+        --agree-license
+```
+
+### Paso 8. Reiniciamos Apache
+
+```yaml
+    - name: Reiniciar apache
+      service:
+        name: apache2
+        state: restarted
+```
+
+## Comprobación de que Moodle funciona
+
+![](imagenes/moodle-3.1.png)

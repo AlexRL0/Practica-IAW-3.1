@@ -67,13 +67,13 @@
       command: >
         sudo -u www-data php /var/www/html/moodle/admin/cli/install.php
         --lang=es
-        --wwwroot=https://moodle-ansiblearl.zapto.org
-        --dataroot=/var/www/moodledata
+        --wwwroot=https://{{moodle.domain}}
+        --dataroot={{moodle.data_directory}}
         --dbtype=mysqli
-        --dbhost=172.31.36.190
-        --dbname=moodle_db
-        --dbuser=usuario_moodle
-        --dbpass=Contraasir
+        --dbhost={{moodle.db_host}}
+        --dbname={{moodle.db_name}}
+        --dbuser={{moodle.db_user}}
+        --dbpass={{moodle.db_password}}
         --fullname="Moodle"
         --shortname="ARL"
         --summary="celia"
