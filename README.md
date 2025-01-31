@@ -280,7 +280,7 @@ sudo ansible-playbooks -i /ruta/al/inventario /ruta/al/archivo/yaml
       replace:
         path: /etc/mysql/mysql.conf.d/mysqld.cnf
         regexp: '^bind-address.*'
-        replace: 'bind-address = "{{}}"'
+        replace: 'bind-address = "{{moodle.ip_cliente_mysql}}"'
 ```
 
 ### Paso 9. Reiniciamos los privilegios del usuario y el servicio MySQL
