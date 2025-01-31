@@ -24,7 +24,7 @@ Hecho esto ya podemos automatizar la Implantación de Moodle en Amazon Web Servi
 
 ## 1.1 Infraestructura necesaria
 
-La infraestructura necesaria está compuesta de tres máquinas virtuales, un nodo de control para ejecutar los playbooks de ansible al resto de máquinas, un frontal donde se desplegará moodle (Frontend) y un backend donde tendremos la base de datos para moodle y el usuario (Back-End).
+La infraestructura necesaria está compuesta de tres instancias EC2, un nodo de control para ejecutar los playbooks de ansible al resto de máquinas, un frontal donde se desplegará moodle (Frontend) y un backend donde tendremos la base de datos para moodle y el usuario (Back-End).
 
 * Nodo de control.
 * Frontal con el moodle desplegado.
