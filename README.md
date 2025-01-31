@@ -273,7 +273,17 @@ sudo ansible-playbooks -i /ruta/al/inventario /ruta/al/archivo/yaml
         login_unix_socket: /var/run/mysqld/mysqld.sock
 ```
 
-### Paso 8. Reiniciamos los privilegios del usuario y el servicio MySQL
+## Paso 8. Cambiamos el bind-address en el archivo de configuración de MySQL
+
+```yaml
+    - name: Cambiar bind-address en mysqld.cnf
+      replace:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: '^bind-address.*'
+        replace: 'bind-address = 172.31.45.95' # La ip que hay que poner aquí es la ip privada del frontend para que se pueda comunicar con la base de datos del backend.
+```
+
+### Paso 9. Reiniciamos los privilegios del usuario y el servicio MySQL
 
 ```yaml
     - name: Reiniciamos privilegios del usuario
