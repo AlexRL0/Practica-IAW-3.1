@@ -280,7 +280,7 @@ sudo ansible-playbooks -i /ruta/al/inventario /ruta/al/archivo/yaml
       replace:
         path: /etc/mysql/mysql.conf.d/mysqld.cnf
         regexp: '^bind-address.*'
-        replace: 'bind-address = 172.31.45.95' # La ip que hay que poner aquí es la ip privada del frontend para que se pueda comunicar con la base de datos del backend.
+        replace: 'bind-address = "{{}}"'
 ```
 
 ### Paso 9. Reiniciamos los privilegios del usuario y el servicio MySQL
