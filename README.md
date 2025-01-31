@@ -32,6 +32,13 @@ La infraestructura necesaria está compuesta de tres máquinas virtuales, un nod
 
 ## 1.2 Aspectos importantes a tener en cuenta
 
+Para poder utilizar ansible debemos instalarlo con los siguientes comandos:
+
+```bash
+sudo apt update
+sudo apt install ansible -y
+```
+
 Para que el nodo de control pueda ver las otras máquinas sin problemas, hay que crear una carpeta llamada `inventory` y dentro de ella un archivo llamado `inventory` con el siguiente contenido:
 
 ```yaml
