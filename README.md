@@ -61,6 +61,12 @@ También es importante darle los permisos necesarios a la clave `vockey.pem` par
 sudo chmod 400 vockey.pem
 ```
 
+Para ejecutar los playbooks de ansible se hace de la siguiente forma:
+
+```bash
+sudo ansible-playbooks -i /ruta/al/inventario /ruta/al/archivo/yaml
+```
+
 ## 2. Creación del archivo `install_lamp_frontend` para la instalación de apache en el frontend.
 
 ### Paso 1. Actualizamos los repositorios
