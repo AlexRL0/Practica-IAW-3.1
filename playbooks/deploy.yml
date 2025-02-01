@@ -58,6 +58,7 @@
         
     - name: Instalar moodle desde PHP CLI
       command:
+        sudo -u www-data php /var/www/html/admin/cli/install.php \
         --lang=es
         --wwwroot=https://{{moodle.domain}}
         --dataroot={{moodle.data_directory}}
