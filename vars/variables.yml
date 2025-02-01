@@ -9,7 +9,7 @@ moodle:
     db_user: usuario_moodle
     db_password: Contraasir
     type: mysqli
-    db_host: 172.31.36.190
+    db_host: 172.31.35.24
     ip_cliente_mysql: 172.31.%
     domain: moodle-ansiblearl.zapto.org
     data_directory: /var/www/moodledata

@@ -22,43 +22,40 @@
         name: python3-pymysql
         state: present
 
-    - name: Crear la base de datos para moodle
+    - name: Eliminar la base de datos
       mysql_db:
         name: "{{ moodle.db_name }}"
-        encoding: utf8mb4
-        collation: utf8mb4_unicode_ci
-        state: present
-        login_unix_socket: /var/run/mysqld/mysqld.sock
-
-    - name: Borra el usuario si existe
-      mysql_user:
-        name: "{{ moodle.db_user }}"
-        host: "{{ moodle.ip_cliente_mysql }}"
         state: absent
         login_unix_socket: /var/run/mysqld/mysqld.sock
 
-    - name: Crear el usuario para la base de datos de moodle
-      mysql_user:
-        name: "{{ moodle.db_user }}"
-        host: "{{ moodle.ip_cliente_mysql }}"
-        password: "{{ moodle.db_password }}"
-        priv: "{{ moodle.db_name }}.*:ALL"
-        state: present
-        login_unix_socket: /var/run/mysqld/mysqld.sock
-
-    - name: Reiniciamos privilegios del usuario
+    - name: Crear una base de datos
       mysql_db:
         name: "{{ moodle.db_name }}"
         state: present
-        login_unix_socket: /var/run/mysqld/mysqld.sock
+        login_unix_socket: /var/run/mysqld/mysqld.sock 
+
+    - name: Crear el usuario de la base de datos
+      mysql_user:         
+        name: "{{ moodle.db_user }}"
+        password: "{{ moodle.db_password }}"
+        priv: "{{ moodle.db_name }}.*:ALL"
+        host: "{{ moodle.ip_cliente_mysql }}"
+        state: present
+        login_unix_socket: /var/run/mysqld/mysqld.sock 
+
+    - name: Configuramos MySQL para permitir conexiones desde cualquier interfaz
+      replace:
+        path: /etc/mysql/mysql.conf.d/mysqld.cnf
+        regexp: 127.0.0.1
+        replace: 0.0.0.0
 
     - name: Cambiar bind-address en mysqld.cnf
       replace:
         path: /etc/mysql/mysql.conf.d/mysqld.cnf
         regexp: '^bind-address.*'
-        replace: 'bind-address = "{{ moodle.ip_cliente_mysql }}"'
+        replace: 'bind-address = 172.31.47.178'
 
-    - name: Reiniciamos MySQL
+    - name: Reiniciamos el servicio de base de datos
       service:
         name: mysql
         state: restarted

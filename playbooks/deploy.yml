@@ -10,19 +10,16 @@
       file:
         path: /tmp/moodle*
         state: absent
-      ignore_errors: true
 
     - name: Limpiar directorio /var/www/html
       file:
         path: /var/www/html/*
         state: absent
-      ignore_errors: true
 
     - name: Limpiar directorio /var/www/moodledata
       file:
         path: /var/www/moodledata/*
         state: absent
-      ignore_errors: true
 
     - name: Descargar el código fuente de Moodle
       get_url:
