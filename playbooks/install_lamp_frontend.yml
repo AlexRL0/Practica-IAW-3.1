@@ -14,6 +14,11 @@
         name: apache2
         state: present
 
+    - name: Instalar unzip
+      apt: 
+        name: unzip
+        state: present
+
     - name: Instalar PHP y los módulos necesarios
       apt: 
         name:
@@ -37,7 +42,13 @@
     - name: Modificamos el valor max_input_vars de PHP
       replace: 
         path: /etc/php/8.3/apache2/php.ini
-        regexp: ;max_input_vars = 1000
+        regexp: '^;max_input_vars\s=.*'
+        replace: max_input_vars = 5000
+
+    - name: Modificamos el valor max_input_vars de PHP
+      replace: 
+        path: /etc/php/8.3/cli/php.ini
+        regexp: '^;max_input_vars\s=.*'
         replace: max_input_vars = 5000
 
     - name: Modificamos el valor de memory_limit de PHP
