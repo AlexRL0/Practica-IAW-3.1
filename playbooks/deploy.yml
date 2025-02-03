@@ -70,7 +70,7 @@
         --fullname="Moodle"
         --shortname="ARL"
         --summary="celia"
-        --adminuser=admin
+        --adminuser=Alex
         --adminpass="Admin01%"
         --adminemail="admin@gmail.com"
         --non-interactive
