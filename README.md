@@ -473,12 +473,15 @@ sudo ansible-playbooks -i /ruta/al/inventario /ruta/al/archivo/yaml
 
 ## Comprobación de que los playbooks funcionan
 
-![](imagenes/moodle-3.1.png)
-![](imagenes/moodle-3.1.png)
-![](imagenes/moodle-3.1.png)
-![](imagenes/moodle-3.1.png)
-![](imagenes/moodle-3.1.png)
-
+Playbook del frontend
+![](imagenes/playbook-moodle-parte1.png)
+---
+Playbook del backend y despliegue del certificado con certbot
+![](imagenes/playbook-moodle-parte2.png)
+---
+Playbook del despligue de moodle
+![](imagenes/playbook-moodle-parte3.png)
+---
 
 ## Comprobación de que Moodle funciona
 
