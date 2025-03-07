@@ -471,6 +471,15 @@ sudo ansible-playbooks -i /ruta/al/inventario /ruta/al/archivo/yaml
         state: restarted
 ```
 
+## Comprobación de que los playbooks funcionan
+
+![](imagenes/moodle-3.1.png)
+![](imagenes/moodle-3.1.png)
+![](imagenes/moodle-3.1.png)
+![](imagenes/moodle-3.1.png)
+![](imagenes/moodle-3.1.png)
+
+
 ## Comprobación de que Moodle funciona
 
 ![](imagenes/moodle-3.1.png)
